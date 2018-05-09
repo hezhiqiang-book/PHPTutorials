@@ -53,29 +53,39 @@
 	+ 使用 & 符号定义
 
 - 引用变量的原理
-`$a = range(0, 1000); // 30`
+```
+$a = range(0, 1000); // 30
 内存空间：0x00000001($a) => 30
-`var_dump(memory_get_usage());` // int(387800)
+var_dump(memory_get_usage()); // int(387800)
+```
 
-`$b = $a;`
+```
+$b = $a;
 PHP Cow(copy on write) 机制：$a和$b都指向同一个30，当其中一个变量改变时才会分配新的内存空间赋值其他数据
+```
+
 - 内存空间：
+```
 0x00000001($a) => 30
 0x00000002($b) => 0x00000001
 简单理解就是: $a,$b => 30
-`var_dump(memory_get_usage());` // int(387832)
+var_dump(memory_get_usage()); // int(387832)
+```
 
-`$a = 40`
-- 内存空间：
+
+- 内存空间：`$a = 40`
+```
 0x00000001($a) => 40
 0x00000002($b) => 30
 简单理解就是: $a等于40, $b等于30
-`var_dump(memory_get_usage());` // int(424752)
+var_dump(memory_get_usage()); // int(424752)
+```
 
-`$b = &$a;`
+- `$b = &$a;`
 - 两个变量都指向同一内存空间地址存储的数据
 
-`<?php
+```
+<?php
 // zaval 变量容器
 $a = range(0, 3);
 $b = $a;
@@ -96,17 +106,20 @@ xdebug_debug_zval('a');
 echo "\n";
 xdebug_debug_zval('b');
 echo "\n";
-?>`
-
+?>
+```
 
 - unset 只会取消引用，不会销毁空间
-`$a = 1;
+```
+$a = 1;
 $b = &$a;
 unset($b);
 echo $a; // 1`
+```
 
 - 对象本身也是引用传递
-`class Person
+```
+class Person
 {
 	public $name = "lingyima";
 }
@@ -116,9 +129,10 @@ $p2 = $p1;
 xdebug_debug_zval('p1');
 $p2->name = "zhangshan";
 xdebug_debug_zval('p1');`
-
+```
 
 - 真题
+```
 <?php
 $data=['a','b','c'];
 foreach($data as $k=>$v)
@@ -127,8 +141,9 @@ foreach($data as $k=>$v)
 }
 // 程序运行时，每一次循环结束后变量$data的值是什么
 // 程序执行完成后，变量$data的值是什么？请解释
+```
 
-
+```
 $data=['a','b','c'];
 分配内存地址
 0x01 => a
@@ -137,30 +152,38 @@ $data=['a','b','c'];
 data[0] => 0x01
 data[1] => 0x02
 data[3] => 0x03
+```
 
 - 第一次
+```
 $k=0 			0x04 => 0 
 $v=a 			0x05 => 0x01
 $v=&$data[0] 	0x05 => 0x01
-`$data = a,b,c`
+$data = a,b,c
+```
 
 - 第二次
+```
 $k=1			0x04 => 1
 $v=b, 			0x05 => 0x01 
 **$v上次是第一次引用变量$v=&$data[0]，所以修改$data[0]=b**			
 $v=&$data[1] 	0x05 => 0x02
-`$data = b,b,c`
+$data = b,b,c
+```
 
 - 第三次
+```
 $k=2			0x04 => 2
 $v=c, 			0x05 => 0x02 
 **$v上次是第二次引用变量$v=&$data[1]，所以修改$data[1]=c**			
 $v=&$data[2] 	0x05 => 0x03
 `$data = b,c,c`
+```
 
 - 执行结果
-`$data = b,c,c`
-
+```
+$data = b,c,c
+```
 - 总结：foreach 循环遍历中 **$v是变量元素**第1次循环体开始，首先**引用计数变量**，然后变为**引用变量**并把**当前遍历的变量元素地址**赋给$v，而第二次遍历中由于第一次遍历结果的**$v为引用变量**，所以首先**修改引用变量的值**，然后又把**当前遍历的变量地址**赋给$v，依此类推。除了第一次循环之外，其他循环都会版当前遍历元素值赋给上一次遍历元素。
 
 
@@ -185,6 +208,7 @@ $v=&$data[2] 	0x05 => 0x03
 	+ 特殊: null, resource
 
 - 浮点类型：不能用于相等运算符
+```
 $a=0.1;
 $b=0.7;
 // $a+$b=>0.7999
@@ -192,6 +216,7 @@ if($a+$b == 0.8)
 {
 	// 不会执行
 }
+```
 
 - 布尔类型
 	+ false：0, 0.0, '', '0', false, array(), NULL
@@ -199,7 +224,8 @@ if($a+$b == 0.8)
 - 数组类型
 	+ 超全局数据:`$GLOBALS, $_GET, $_POST, $_REQUEST, $_SESSION, $_COOKIE, $_SERVER, $_FILES, $_ENV`
 
-`$_SERVER['SERVER_ADDR'] 服务器IP地址
+```
+$_SERVER['SERVER_ADDR'] 服务器IP地址
 $_SERVER['SERVER_NAME'] 服务器名称
 $_SERVER['SERVER_TIME'] 请求时间
 $_SERVER['SERVER_STRING']
@@ -208,21 +234,25 @@ $_SERVER['HTTP_USER_AGENT']
 $_SERVER['REMOTE_ADDR']
 $_SERVER['REQUEST_URI']
 $_SERVER['PATH_INFO']`
+```
 
 - NULL
-赋值
-未定义的变量
-unser销毁的变量
+	+ 赋值
+	+ 未定义的变量
+	+ unset 销毁的变量
 
 - 常量
-const(语言结构，更快)，定义类常量 （定义之后不能删除和修改）
-define(函数)
-defined
+	+ const(语言结构，更快)，定义类常量 （定义之后不能删除和修改）
+	+ define(函数)
+	+ defined
 
 - 预定义常量
-`__FILE__, __LINE__, __DIR__, __FUNCTION__, __CLASS__, __TRAIT__, __METHOD__, __NAMESPACE__`
+```
+__FILE__, __LINE__, __DIR__, __FUNCTION__, __CLASS__, __TRAIT__, __METHOD__, __NAMESPACE__
+```
 
 - TRAIT: 5.4
+```
 <?php
 trait Log{
     public function startLog() {
@@ -232,7 +262,10 @@ trait Log{
         // echo ..
     }
 }
-// Publish.php
+```
+
+- Publish.php
+```
 <?php
 class Publish {
     use Log;
@@ -248,6 +281,7 @@ class Answer {
 $answer = new Answer();
 $answer->startLog();
 $answer->endLog();
+```
 
 - 继承的方式虽然也能解决问题,但其思路违背了面向对象的原则,显得很粗暴;多态方式也可行,但不符合软件开发中的DRY原则,增加了维护成本。而Trait方式则避免了上述的不足之处,相对优雅的实现了代码的复用。
 
@@ -256,8 +290,7 @@ $answer->endLog();
 ### 运算符
 - 面试：foo()和@foo()之间的区别？
 - 考点：
-1. PHP的运算符的错误控制符@
-放置在表达式之前，该表达式可能产生的任何错误信息都被忽略掉
+1. PHP的运算符的错误控制符@放置在表达式之前，该表达式可能产生的任何错误信息都被忽略掉
 
 2. 延伸：PHP 所有运算符考点
 - 运算符的优先级
@@ -284,11 +317,12 @@ $answer->endLog();
 	+ xor 左
 	+ or 左
 
-`递增/递减>!>算术运算符>大小比较>不相等比较>引用>位运算符(^)>位运算符(|)>逻辑与>逻辑或>三目>赋值>and>xor>or`
+- 递增/递减>!>算术运算符>大小比较>不相等比较>引用>位运算符(^)>位运算符(|)>逻辑与>逻辑或>三目>赋值>and>xor>or
 
-**括号：可读性**
+- **括号：可读性**
 
 - 比较运算符
+```
 == 和 === 的区别
 等值判断(false的其中情况)
 if('==false'){
@@ -298,6 +332,7 @@ echo '';
 } elseif(0.0==0){
 	echo '';
 }
+```
 
 - 递增/递减运算符
 	+ 不影响布尔值
@@ -307,6 +342,7 @@ echo '';
 	+ i--，后运算
 
 - 逻辑运算符
+```
 短路作用
 ||和&& 与 or 和 and的优先级不同
 
@@ -316,12 +352,13 @@ $b = false && $a == 1; // false
 || && and or
 $a = false || true; // true
 $b = false or true; // b=false, 整体true
+```
 
 - 重点递增/递减/运算符的运算规则，逻辑运算符的短路效果，看到逻辑运算符多考虑优先级问题
 
-- 真题
-下列程序中请写出打印输出的结果
-`<?php
+- 真题: 下列程序中请写出打印输出的结果
+```
+<?php
 $a = 0;
 $b = 0;
 if($a = 3>0 || $b=3>0) // $a = true, $b=0
@@ -332,7 +369,8 @@ if($a = 3>0 || $b=3>0) // $a = true, $b=0
 	echo $b."\n"; // 1
 }
 $a = 0;
-$b = 0;`
+$b = 0;
+```
 
 ### 流程控制
 - 面试：列出3种PHP数组操作的语法，并注明各种循环的区别
@@ -349,28 +387,33 @@ $b = 0;`
 	+ while list(),each()： 索引/关联数组
 		* 不会 reset()
 
-
 - PHP 分支考点
 
-`if...elseif`
-**优先范围小的放在前面**
+```
+if...elseif
+```
+- **优先范围小的放在前面**
 
-`switch...case...`
+```
+switch...case...
+```
+
 - 表达式数据类型只能是**整型，浮点型，字符串型**
-`continue` 作用等价于break
-`continue 2` 跳出两层循环
-**生成跳转表**，直接俄跳转到对应 case
+
+- `continue` 作用等价于break
+- `continue 2` 跳出两层循环
+- **生成跳转表**，直接俄跳转到对应 case
 - 效率：体检比一个简单的比较要复杂得多的或者在一个很多次的循环中，switch语句可能快一些
 
-**面试**：如何优化if...else 语句？
+- **面试**：如何优化if...else 语句？
 - 可能性判断成立大的放在前置
 - 判断复杂的判断使用switch case
 
 
 ### 自定义函数及内部函数
-- 面试题
-写出如下程序的输出结果
-`<?php
+- 面试题: 写出如下程序的输出结果
+```
+<?php
 $count = 5;
 function get_count()
 {
@@ -380,7 +423,8 @@ function get_count()
 echo $count; // 5;
 ++$count;
 echo get_count(); // NULL
-echo get_count(); / 1`
+echo get_count(); / 1
+```
 
 - 考官考点：
 	+ 变量作用域
@@ -411,14 +455,15 @@ echo get_count(); / 1`
 #### 函数的参数
 - 默认，函数参数通过值传递
 - 可以引用传递参数
-`$a = 1;
+```
+$a = 1;
 function fun(& $a)
 {
 	$a = 2;
 }
 fun($a);
-echo　$a; // 2`
-
+echo　$a; // 2
+```
 
 #### 函数的返回值
 - 使用 return 语句返回值
@@ -429,6 +474,7 @@ echo　$a; // 2`
 
 #### 函数的引用返回
 - 从函数返回一个引用，必须在函数声明和指派返回值给一个变量时都使用引用运算符 &
+```
 function & refFun()
 {
 	static $b = 10;
@@ -438,12 +484,12 @@ $a = refFun(); // 10
 $b = &refFun(); // 10，与静态变量$b互为引用
 $b = 100;
 echo refFun(); // 100
+```
 
-
+```
 <?php
 $out = 10;
-
-`function &referenceFunc(&$param)
+function &referenceFunc(&$param)
 {
         static $inner = 100;
         $param++;
@@ -460,6 +506,7 @@ echo "out=".$out ."\n"; // 11
 $a = referenceFunc($out);
 echo "a=".$a."\n";      // 100
 echo "out=".$out ."\n"; // 11`
+```
 
 #### 外部文件的导入
 - include/require 语句包函并运行指定文件
@@ -522,10 +569,7 @@ echo "out=".$out ."\n"; // 11`
 ### 正则表达式
 - 至少写出一种验证139开关的11位手机号码的正则表达式
 
-
-
 ### 文件及目录处理
-
 
 ### 会话控制
 
@@ -640,11 +684,6 @@ echo "out=".$out ."\n"; // 11`
 		* 尺寸
 		
 
-
-
-
-
-
 ### Ajax 基础内容考点
 - 面试：Ajax 技术利用了什么协议？简述 Ajax 的工作机制
 - 考官考点
@@ -660,10 +699,13 @@ echo "out=".$out ."\n"; // 11`
 	+ XMLHttpRequest 用于在后台与服务器交换数据
 
 - XMLHttpRequest 对象请求
+```
 open(method,url,is_async)
 send(string)
+```
 
 - XMLHttpRequest 对象响应
+```
 responseText
 responseXML
 onreadstatechange
@@ -675,14 +717,17 @@ readState
 	4: 请求已完成，且响应已就绪
 
 status: 200, 400
+```
 
 - 常用方法
+```
 $(ele).load()
 $.ajax()
 $.get()
 $.post()
 $.getJSON()
 $.getScript()
+```
 
 - 编写 jQuery中，使用处理 **Ajax** 的几种方法
 
@@ -703,7 +748,7 @@ $.getScript()
 + 网络应用
 	* curl,wget, telnet, mail, elinks
 + 网络测试：
-	 * ping, netstat, host
+	* ping, netstat, host
 + 网络配置
 	* hostname, ifconfig
 + 常用工具
@@ -767,7 +812,6 @@ $.getScript()
 `0 0 * * * reboot`
 
 
-
 ## MySQL 数据库的基础和优化
 
 ### MySQL基础知识
@@ -796,13 +840,16 @@ $.getScript()
 - mysql: 支持MySQL操作，没有预处理、面向过程
 
 
-`form(action=store.php, method=post)
+```
+form(action=store.php, method=post)
 	input(type=text,name=title)
 	textarea(name=content)
 	input(type=text,name=name)
-	submit`
+	submit
+```
 
-`$title = $_POST['title']
+```
+$title = $_POST['title']
 $content = $_POST['content']
 $name = $_POST['name']
 if (empty($title) || empty($content) || empty($name))
@@ -832,16 +879,17 @@ catch(PDOException $e)
 {
 	echo $e->getMessage();
 }
-`
+```
 
 - 面试：设计一个无限分类表
+```
 id/title/pid/path
 1/服装/0/0-1
 2/上衣/1/0-1-2
 3/长轴/2/0-1-2-3
+```
 
 - order by: id/title/pid
-
 
 ## PHP 框架基础知识
 - 面试：谈谈对 **MVC** 的认识，介绍几种目前比较流行的 MVC 框架
@@ -896,8 +944,6 @@ id/title/pid/path
 - 缺点：学习成本高，量级比Yaf重
 
 - 面试：Yii2 框架如何实现数据的自动验证
-
-
 
 ## 算法、逻辑思维
 - 常见数据结构特征
