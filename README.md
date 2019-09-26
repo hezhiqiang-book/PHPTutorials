@@ -77,9 +77,13 @@ function apiXml($code, $message, $data=array()) {
 }
 
 function xmlToEncode($data) {
-  $xml = "";
+  $xml = $attr = "";
   foreach($data as $key => $value) {
-    $xml .= "<{$key}>";
+    if (is_numeric($key)) {
+      $attr = "id={$key}";
+      $key = "item";
+    }
+    $xml .= "<{$key} {$attr}>";
     $xml .= is_array($value) ? xmlToEncode($value): $value;
     $xml .= "</{$key}>";
   }
