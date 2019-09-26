@@ -80,7 +80,7 @@ function xmlToEncode($data) {
   $xml = $attr = "";
   foreach($data as $key => $value) {
     if (is_numeric($key)) {
-      $attr = "id={$key}";
+      $attr = "id=\"{$key}\"";
       $key = "item";
     }
     $xml .= "<{$key} {$attr}>";
