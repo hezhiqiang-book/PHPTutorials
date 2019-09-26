@@ -24,6 +24,7 @@
 
 ```php
 /**
+ * 按照JSON数据格式输出
  * @param int $code 自定义状态码
  * @param string $message 提示信息
  * @param array $data 数据
@@ -55,18 +56,33 @@ apiJson(200, '数据返回成功', $arr);
 - 组装字符串
 
 ```php
-function apiXml() {
+/**
+ * 按照JSON数据格式输出
+ * @param int $code 自定义状态码
+ * @param string $message 提示信息
+ * @param array $data 数据
+ * @return string
+ */
+function apiXml($code, $message, $data=array()) { 
+  if (!is_numeric($code)) {
+    return '';
+  }
+  
   header("Content-Type:text/xml");
   $xml = "<?xml version="1.0" encoding="UTF-8"?>\n";
   $xml .= "<root>\n";
-  $xml .= "<code>200</200>\n";
-  $xml .= "<message>数据返回成功</message>\n";
-  $xml .= "<data>\n";
-  $xml .= "<id>1</id>\n";
-  $xml .= "<name>wovert</name>\n";
-  $xml .= "</data>\n";
-  $xml .= "</root>\n";
-  
+  $xml . = xmlToEncode($data);
+  $xml .= "</root>\n";  
+  return $xml;
+}
+
+function xmlToEncode($data) {
+  $xml = "";
+  foreach($data as $key => $value) {
+    $xml .= "<{$key}>";
+    $xml .= is_array($value) ? xmlToEncode($value): $value;
+    $xml .= "</{$key}>";
+  }
   return $xml;
 }
 
