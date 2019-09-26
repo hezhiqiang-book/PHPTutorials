@@ -98,3 +98,6 @@ apiXml();
   - XMLWriter
   - SimpeXML
 
+### 接口方案
+
+- Start BlueStacks安卓模拟器
