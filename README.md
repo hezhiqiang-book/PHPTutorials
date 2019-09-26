@@ -56,6 +56,7 @@ apiJson(200, '数据返回成功', $arr);
 
 ```php
 function apiXml() {
+  header("Content-Type:text/xml");
   $xml = "<?xml version="1.0" encoding="UTF-8"?>\n";
   $xml .= "<root>\n";
   $xml .= "<code>200</200>\n";
