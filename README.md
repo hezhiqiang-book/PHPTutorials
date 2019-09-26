@@ -20,7 +20,7 @@
 ```
 
 
-- php封装通信数据标准格式
+#### php封装 JSON 数据标准格式
 
 ```php
 /**
@@ -48,4 +48,33 @@ $arr = array(
 );
 
 apiJson(200, '数据返回成功', $arr);
+```
+
+#### PHP 生成XML数据
+
+- 组装字符串
+
+```php
+function apiXml() {
+  $xml = "<?xml version="1.0" encoding="UTF-8"?>";
+  $xml .= "<root>";
+  $xml .= "<code>200</200>";
+  $xml .= "<message>数据返回成功</message";
+  $xml .= "<data>";
+  $xml .= "<id>1</id>";
+  $xml .= "<name>wovert</name>";
+  $xml .= "</data>";
+  $xml .= "</root>";
+  
+  return $xml;
+}
+
+apiXml();
+```
+
+- 系统类
+  - DomDocument
+  - XMLWriter
+  - SimpeXML
+
 ```
