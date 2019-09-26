@@ -56,15 +56,15 @@ apiJson(200, '数据返回成功', $arr);
 
 ```php
 function apiXml() {
-  $xml = "<?xml version="1.0" encoding="UTF-8"?>";
-  $xml .= "<root>";
-  $xml .= "<code>200</200>";
-  $xml .= "<message>数据返回成功</message";
-  $xml .= "<data>";
-  $xml .= "<id>1</id>";
-  $xml .= "<name>wovert</name>";
-  $xml .= "</data>";
-  $xml .= "</root>";
+  $xml = "<?xml version="1.0" encoding="UTF-8"?>\n";
+  $xml .= "<root>\n";
+  $xml .= "<code>200</200>\n";
+  $xml .= "<message>数据返回成功</message>\n";
+  $xml .= "<data>\n";
+  $xml .= "<id>1</id>\n";
+  $xml .= "<name>wovert</name>\n";
+  $xml .= "</data>\n";
+  $xml .= "</root>\n";
   
   return $xml;
 }
@@ -77,4 +77,3 @@ apiXml();
   - XMLWriter
   - SimpeXML
 
-```
